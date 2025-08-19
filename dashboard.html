@@ -5,12 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AnonBrew Dashboard</title>
 
-<!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getDatabase, ref, get, push, set } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+import { getDatabase, ref, get, push, set, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyD5cdmNDck5nHp7idyWYMCMRcg4qhcJIUA",
   authDomain: "anonbrew-543a6.firebaseapp.com",
@@ -22,7 +20,6 @@ const firebaseConfig = {
   measurementId: "G-74KG21Y44F"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 window.firebaseDatabase = database;
@@ -33,47 +30,143 @@ body {
   font-family: Arial, sans-serif;
   background-color: #0B0B0B;
   color: #EEE;
-  margin: 0;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  margin:0;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
 }
 .site-header, .site-footer {
-  background-color: #111;
-  padding: 20px;
-  text-align: center;
-  border-bottom: 1px solid #333;
+  background-color:#111;
+  padding:20px;
+  text-align:center;
+  border-bottom:1px solid #333;
 }
-.site-header h1 { color: #F4C430; margin:0; }
+.site-header h1 { color:#F4C430; margin:0; letter-spacing:1px; font-size:2em; }
 .dashboard-container {
-  flex: 1;
-  padding: 30px;
-  max-width: 900px;
-  margin: 20px auto;
-  background-color: #1A1A1A;
-  border-radius: 12px;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+  flex:1;
+  padding:20px;
+  max-width:1200px;
+  margin:20px auto;
+  display:flex;
+  flex-direction:column;
 }
-.search-bar { margin-bottom: 20px; }
-.search-bar input { padding: 10px; width: 60%; border-radius: 8px; border: 1px solid #333; background-color: #111; color: #EEE; }
-.search-bar button { padding: 10px 15px; margin-left: 10px; border-radius: 8px; border: none; background-color: #F4C430; color: #0B0B0B; cursor: pointer; font-weight: bold; }
-.search-bar button:hover { background-color: #e0b220; }
-.add-section { margin-top: 20px; }
-.add-section input { padding: 10px; width: 60%; border-radius: 8px; border: 1px solid #333; background-color: #111; color: #EEE; }
-.add-section button { padding: 10px 15px; margin-left: 10px; border-radius: 8px; border: none; background-color: #F4C430; color: #0B0B0B; cursor: pointer; font-weight: bold; }
-.add-section button:hover { background-color: #e0b220; }
-.names-list { margin-top: 20px; }
-.name-item { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; transition: background 0.2s; }
-.name-item:hover { background-color: #222; }
-.error-message { color: #FF6F61; display: none; margin-top: 10px; }
-.success-message { color: #7CFC00; display: none; margin-top: 10px; }
+.search-bar { margin-bottom:20px; text-align:center;}
+.search-bar input {
+  padding:10px;
+  width:60%;
+  border-radius:8px;
+  border:1px solid #333;
+  background-color:#111;
+  color:#EEE;
+  transition: 0.3s;
+}
+.search-bar input:focus { border-color:#F4C430; outline:none; }
+.search-bar button {
+  padding:10px 15px;
+  margin-left:10px;
+  border-radius:8px;
+  border:none;
+  background-color:#F4C430;
+  color:#0B0B0B;
+  cursor:pointer;
+  font-weight:bold;
+  transition:0.3s;
+}
+.search-bar button:hover { background-color:#e0b220; }
+.names-list { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; }
+.card {
+  background-color:#1A1A1A;
+  border-radius:12px;
+  padding:15px;
+  width:280px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.6);
+  position:relative;
+  transition:0.3s;
+}
+.card:hover { transform: translateY(-5px) scale(1.02); box-shadow:0 6px 15px rgba(0,0,0,0.8); }
+.card h3 { margin:0 0 10px 0; color:#F4C430; font-size:1.3em; }
+.card .details { margin-bottom:10px; font-size:13px; color:#CCC; }
+.card .rating { font-weight:bold; color:#7CFC00; margin-bottom:10px; }
+.card .reviews { margin-top:10px; max-height:150px; overflow-y:auto; border-top:1px solid #333; padding-top:5px; }
+.card .review { border-bottom:1px solid #333; padding:5px 0; font-size:13px; }
+.card input[type="text"], .card textarea, .card input[type="number"] {
+  width:100%;
+  margin:5px 0;
+  padding:8px;
+  border-radius:6px;
+  border:1px solid #333;
+  background-color:#111;
+  color:#EEE;
+}
+.card button.addReview {
+  background-color:#F4C430;
+  color:#0B0B0B;
+  padding:8px 12px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:bold;
+  transition:0.3s;
+}
+.card button.addReview:hover { background-color:#e0b220; }
+.add-section { margin-top:20px; text-align:center; }
+.add-section input {
+  padding:10px;
+  width:60%;
+  border-radius:8px;
+  border:1px solid #333;
+  background-color:#111;
+  color:#EEE;
+  transition:0.3s;
+}
+.add-section input:focus { border-color:#7CFC00; outline:none; }
+.add-section button {
+  padding:10px 15px;
+  margin-left:10px;
+  border-radius:8px;
+  border:none;
+  background-color:#7CFC00;
+  color:#0B0B0B;
+  cursor:pointer;
+  font-weight:bold;
+  transition:0.3s;
+}
+.add-section button:hover { background-color:#5ed300; }
+.error-message { color:#FF6F61; display:none; margin-top:10px; font-weight:bold; }
+.success-message { color:#7CFC00; display:none; margin-top:10px; font-weight:bold; }
+.loader {
+  border: 5px solid #111;
+  border-top: 5px solid #F4C430;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.95);}
+.modal-content {
+  background-color:#1A1A1A;
+  margin:5% auto;
+  padding:20px;
+  border:1px solid #333;
+  width:50%;
+  border-radius:12px;
+  color:#EEE;
+  position:relative;
+}
+.close { color:#F4C430; position:absolute; top:10px; right:20px; font-size:28px; font-weight:bold; cursor:pointer; }
+.close:hover { color:#7CFC00; }
+.modal h2 { color:#F4C430; margin-top:0; }
+button.disabled { opacity:0.5; cursor:not-allowed; }
+.card .buttons { display:flex; justify-content:space-between; margin-top:10px; }
+.card .buttons button { flex:1; margin:0 2px; }
 </style>
+
 </head>
 <body>
 
-<header class="site-header">
-<h1>AnonBrew Dashboard</h1>
-</header>
+<header class="site-header"><h1>AnonBrew Dashboard</h1></header>
 
 <div class="dashboard-container">
   <div class="search-bar">
@@ -81,15 +174,23 @@ body {
     <button id="searchBtn">Search</button>
   </div>
 
+  <div class="loader" id="loader"></div>
+  <div class="names-list" id="namesList"></div>
+
   <div class="add-section">
     <input type="text" id="addNameInput" placeholder="Add new Real Name">
     <button id="addNameBtn">Add Name</button>
     <div class="error-message" id="errorMsg"></div>
     <div class="success-message" id="successMsg"></div>
   </div>
+</div>
 
-  <div class="names-list" id="namesList">
-    <!-- Search results will appear here -->
+<div id="profileModal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="closeModal">&times;</span>
+    <h2 id="modalName">Profile</h2>
+    <div id="modalDetails"></div>
+    <div id="modalReviews"></div>
   </div>
 </div>
 
@@ -106,114 +207,126 @@ const addNameBtn = document.getElementById('addNameBtn');
 const namesList = document.getElementById('namesList');
 const errorMsg = document.getElementById('errorMsg');
 const successMsg = document.getElementById('successMsg');
+const loader = document.getElementById('loader');
+const modal = document.getElementById('profileModal');
+const closeModal = document.getElementById('closeModal');
+const modalName = document.getElementById('modalName');
+const modalDetails = document.getElementById('modalDetails');
+const modalReviews = document.getElementById('modalReviews');
 
-// Login check using sessionStorage
 const loggedInUser = sessionStorage.getItem('username');
-if (!loggedInUser) {
-  window.location.href = "index.html";
+if(!loggedInUser){ window.location.href="index.html"; }
+
+function renderReviews(reviews){
+  if(!reviews) return "<p>No reviews yet</p>";
+  let html = "<ul>";
+  for(const key in reviews){
+    const r = reviews[key];
+    html+=`<li><strong>${r.by||"Anonymous"}:</strong> ${r.comment||""} (${r.rating||"-"})</li>`;
+  }
+  html+="</ul>";
+  return html;
 }
 
-async function loadNames(filter="") {
-  namesList.innerHTML = "";
-  const snapshot = await get(ref(database, 'names'));
-  const names = snapshot.val() || {};
-  const filterLower = filter.toLowerCase();
-  let foundSimilar = false;
+function getAverageRating(reviews){
+  if(!reviews) return "No reviews";
+  let total=0,count=0;
+  for(const key in reviews){ total+=Number(reviews[key].rating||0); count++; }
+  return count>0?(total/count).toFixed(2)+" ⭐":"No reviews";
+}
 
-  for (const key in names) {
-    const nameData = names[key];
-    const nameLower = nameData.realName.toLowerCase();
-    // Exact match
-    if(nameLower === filterLower){
-      const div = document.createElement('div');
-      div.classList.add('name-item');
-      div.textContent = nameData.realName + " (Exact match)";
-      div.addEventListener('click', () => {
-        window.location.href = `profile.html?name=${encodeURIComponent(nameData.realName)}`;
-      });
+async function loadNames(filter=""){
+  loader.style.display="block";
+  namesList.innerHTML="";
+  const snapshot = await get(ref(database,'names'));
+  const names = snapshot.val()||{};
+  const filterLower=filter.toLowerCase();
+  let foundSimilar=false;
+  for(const key in names){
+    const nameData=names[key];
+    const nameLower=nameData.realName.toLowerCase();
+    if(nameLower===filterLower||(filterLower.length>0 && nameLower.includes(filterLower))){
+      foundSimilar=true;
+      const div=document.createElement('div');
+      div.classList.add('card');
+      div.innerHTML=`<h3>${nameData.realName}</h3>
+      <div class="details"><strong>Added by:</strong> ${nameData.addedBy||"Anonymous"} | <strong>IP:</strong> ${nameData.ip||"-"}</div>
+      <div class="rating">Average Rating: ${getAverageRating(nameData.reviews)}</div>
+      <div class="reviews">${renderReviews(nameData.reviews)}</div>
+      <input type="text" placeholder="Your name" id="reviewName-${key}">
+      <textarea placeholder="Add review/comment" id="reviewText-${key}"></textarea>
+      <input type="number" placeholder="Rating (1-5)" min="1" max="5" id="reviewRating-${key}">
+      <div class="buttons">
+        <button class="addReview" onclick="addReview('${key}')">Submit Review</button>
+        <button class="addReview" onclick="openProfile('${key}')">View Profile</button>
+      </div>`;
       namesList.appendChild(div);
-      foundSimilar = true;
-    }
-    // Similar match (partial)
-    else if(nameLower.includes(filterLower) && filterLower.length>0){
-      const div = document.createElement('div');
-      div.classList.add('name-item');
-      div.textContent = nameData.realName + " (Similar)";
-      div.addEventListener('click', () => {
-        window.location.href = `profile.html?name=${encodeURIComponent(nameData.realName)}`;
-      });
-      namesList.appendChild(div);
-      foundSimilar = true;
     }
   }
-
-  // If no similar or exact match, show "Add this person" button
   if(!foundSimilar && filter){
-    const addDiv = document.createElement('div');
-    addDiv.classList.add('name-item');
-    addDiv.style.backgroundColor = "#222";
-    addDiv.style.color = "#7CFC00";
-    addDiv.style.fontWeight = "bold";
-    addDiv.textContent = `Add "${filter}"`;
-    addDiv.addEventListener('click', async () => {
-      const ipResponse = await fetch('https://api.ipify.org?format=json');
-      const ipData = await ipResponse.json();
-      const nameRef = push(ref(database, 'names'));
-      await set(nameRef, {
-        realName: filter,
-        addedBy: loggedInUser,
-        ip: ipData.ip,
-        details: "",
-        reviews: {}
-      });
-      loadNames(); // refresh list
+    const addDiv=document.createElement('div');
+    addDiv.classList.add('card');
+    addDiv.style.color="#7CFC00";
+    addDiv.style.textAlign="center";
+    addDiv.innerHTML=`<strong>Add "${filter}"</strong>`;
+    addDiv.addEventListener('click',async()=>{
+      const ipResponse=await fetch('https://api.ipify.org?format=json');
+      const ipData=await ipResponse.json();
+      const nameRef=push(ref(database,'names'));
+      await set(nameRef,{realName:filter,addedBy:loggedInUser,ip:ipData.ip,details:"",reviews:{}});
+      loadNames();
     });
     namesList.appendChild(addDiv);
   }
+  loader.style.display="none";
 }
 
-// Initial load
+window.addReview=async function(key){
+  const reviewName=document.getElementById(`reviewName-${key}`).value.trim()||"Anonymous";
+  const reviewText=document.getElementById(`reviewText-${key}`).value.trim();
+  const reviewRating=Number(document.getElementById(`reviewRating-${key}`).value);
+  if(!reviewText || !reviewRating || reviewRating<1 || reviewRating>5){
+    alert("Please enter comment and rating 1-5"); return;
+  }
+  const reviewRef = push(ref(database,`names/${key}/reviews`));
+  await set(reviewRef,{by:reviewName,comment:reviewText,rating:reviewRating});
+  loadNames(searchInput.value.trim());
+}
+
+async function openProfile(key){
+  const snapshot = await get(ref(database,`names/${key}`));
+  const data = snapshot.val();
+  if(!data) return;
+  modalName.textContent = data.realName;
+  modalDetails.innerHTML = `<p><strong>Added by:</strong> ${data.addedBy||"Anonymous"} | <strong>IP:</strong> ${data.ip||"-"}</p>`;
+  modalReviews.innerHTML = renderReviews(data.reviews);
+  modal.style.display="block";
+}
+
+closeModal.onclick=function(){ modal.style.display="none"; }
+window.onclick=function(event){ if(event.target==modal){ modal.style.display="none"; } }
+
 loadNames();
 
-searchBtn.addEventListener('click', () => {
-  loadNames(searchInput.value.trim());
-});
+searchBtn.addEventListener('click',()=>loadNames(searchInput.value.trim()));
 
-// Add new name manually
-addNameBtn.addEventListener('click', async () => {
-  errorMsg.style.display = 'none';
-  successMsg.style.display = 'none';
-  const newName = addNameInput.value.trim();
-  if (!newName) return;
-
-  const snapshot = await get(ref(database, 'names'));
-  const names = snapshot.val() || {};
-  const lowerNew = newName.toLowerCase();
-
-  for (const key in names) {
-    if (names[key].realName.toLowerCase() === lowerNew) {
-      errorMsg.textContent = "This name already exists!";
-      errorMsg.style.display = 'block';
-      return;
+addNameBtn.addEventListener('click',async()=>{
+  errorMsg.style.display='none'; successMsg.style.display='none';
+  const newName=addNameInput.value.trim();
+  if(!newName) return;
+  const snapshot=await get(ref(database,'names'));
+  const names=snapshot.val()||{};
+  const lowerNew=newName.toLowerCase();
+  for(const key in names){
+    if(names[key].realName.toLowerCase()===lowerNew){
+      errorMsg.textContent="This name already exists!"; errorMsg.style.display='block'; return;
     }
   }
-
-  const ipResponse = await fetch('https://api.ipify.org?format=json');
-  const ipData = await ipResponse.json();
-
-  const nameRef = push(ref(database, 'names'));
-  await set(nameRef, {
-    realName: newName,
-    addedBy: loggedInUser,
-    ip: ipData.ip,
-    details: "",
-    reviews: {}
-  });
-
-  successMsg.textContent = "Name added successfully!";
-  successMsg.style.display = 'block';
-  addNameInput.value = "";
-  loadNames();
+  const ipResponse=await fetch('https://api.ipify.org?format=json');
+  const ipData=await ipResponse.json();
+  const nameRef=push(ref(database,'names'));
+  await set(nameRef,{realName:newName,addedBy:loggedInUser,ip:ipData.ip,details:"",reviews:{}});
+  successMsg.textContent="Name added successfully!"; successMsg.style.display='block'; addNameInput.value=""; loadNames();
 });
 </script>
 
