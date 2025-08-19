@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AnonBrew</title>
+  <title>AnonBrew Login</title>
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js"></script>
 
   <style>
-    /* ===== Body & Background ===== */
     body {
       font-family: Arial, sans-serif;
       background-color: #0B0B0B;
@@ -21,7 +20,6 @@
       min-height: 100vh;
     }
 
-    /* ===== Header ===== */
     .site-header {
       background-color: #111;
       padding: 20px;
@@ -35,42 +33,20 @@
       font-size: 32px;
     }
 
-    .site-header .logo {
-      width: 60px;
-      height: 60px;
-      margin: 0 auto 10px;
-      background: url('logo.png') no-repeat center center;
-      background-size: contain;
-    }
-
-    /* ===== Footer ===== */
-    .site-footer {
-      margin-top: auto;
-      background-color: #111;
-      text-align: center;
-      padding: 15px;
-      border-top: 1px solid #333;
-      color: #888;
-      font-size: 14px;
-    }
-
-    /* ===== Login Container ===== */
     .login-container {
       background-color: #1A1A1A;
       padding: 40px;
       border-radius: 12px;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
       width: 320px;
       margin: 50px auto;
       text-align: center;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.5);
     }
 
-    /* ===== Inputs ===== */
-    .login-container input[type="text"],
-    .login-container input[type="password"] {
+    input[type="text"], input[type="password"] {
       width: 100%;
       padding: 14px;
-      margin: 10px 0 10px 0;
+      margin: 10px 0;
       border: 1px solid #333;
       border-radius: 8px;
       background-color: #111;
@@ -78,8 +54,7 @@
       font-size: 16px;
     }
 
-    /* ===== Buttons ===== */
-    .login-container button {
+    button {
       width: 100%;
       padding: 14px;
       background-color: #F4C430;
@@ -87,25 +62,20 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      font-size: 16px;
       font-weight: bold;
-      transition: background-color 0.3s ease;
+      margin-top: 10px;
+      transition: background-color 0.3s;
     }
 
-    .login-container button:hover {
-      background-color: #e0b220;
-    }
+    button:hover { background-color: #e0b220; }
 
-    /* ===== Error Messages ===== */
-    .login-container .error-message {
+    .error-message {
       color: #FF6F61;
       font-size: 14px;
       margin-bottom: 10px;
       display: none;
-      animation: shake 0.3s ease;
     }
 
-    /* ===== Loading Spinner ===== */
     .loading-spinner {
       border: 4px solid #333;
       border-top: 4px solid #F4C430;
@@ -117,73 +87,39 @@
       display: none;
     }
 
-    /* ===== Animations ===== */
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    @keyframes shake {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      50% { transform: translateX(5px); }
-      75% { transform: translateX(-5px); }
-      100% { transform: translateX(0); }
-    }
+    @keyframes spin { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);} }
 
-    /* ===== Links ===== */
-    .signup-link, .back-link {
-      color: #F4C430;
-      text-decoration: none;
-      font-size: 14px;
-      display: inline-block;
-      margin-top: 15px;
-    }
+    .signup-link { color: #F4C430; text-decoration: none; font-size: 14px; display: inline-block; margin-top: 15px; }
+    .signup-link:hover { text-decoration: underline; }
 
-    .signup-link:hover, .back-link:hover {
-      text-decoration: underline;
-    }
+    .site-footer { margin-top: auto; background-color: #111; text-align: center; padding: 15px; border-top: 1px solid #333; color: #888; font-size: 14px; }
 
-    /* ===== Responsive ===== */
     @media (max-width: 400px) {
-      .login-container {
-        width: 90%;
-        padding: 30px;
-        margin: 30px auto;
-      }
-
-      .site-header h1 {
-        font-size: 28px;
-      }
+      .login-container { width: 90%; padding: 30px; margin: 30px auto; }
+      .site-header h1 { font-size: 28px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
   <header class="site-header">
-    <div class="logo"></div>
     <h1>AnonBrew</h1>
   </header>
 
-  <!-- Login Container -->
   <div class="login-container">
-    <div class="error-message" id="errorMessage">Invalid username or password!</div>
-
+    <div class="error-message" id="errorMessage"></div>
     <form id="loginForm">
       <input type="text" id="username" placeholder="Username" required>
       <input type="password" id="password" placeholder="Password" required>
       <button type="submit">Login</button>
     </form>
-
     <div class="loading-spinner" id="loadingSpinner"></div>
-
     <a href="register.html" class="signup-link">Don't have an account? Register</a>
   </div>
 
-  <!-- Footer -->
-  <footer class="site-footer">
-    <p>&copy; 2025 AnonBrew. All rights reserved.</p>
-  </footer>
+  <footer class="site-footer">&copy; 2025 AnonBrew. All rights reserved.</footer>
 
   <script>
-    // Firebase configuration
     const firebaseConfig = {
       apiKey: "YOUR_API_KEY",
       authDomain: "YOUR_AUTH_DOMAIN",
@@ -198,8 +134,8 @@
     const database = firebase.database(app);
 
     const loginForm = document.getElementById('loginForm');
-    const loadingSpinner = document.getElementById('loadingSpinner');
     const errorMessage = document.getElementById('errorMessage');
+    const loadingSpinner = document.getElementById('loadingSpinner');
 
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -209,9 +145,16 @@
       errorMessage.style.display = 'none';
       loadingSpinner.style.display = 'block';
 
+      if (!username || !password) {
+        loadingSpinner.style.display = 'none';
+        errorMessage.textContent = 'Please enter username and password.';
+        errorMessage.style.display = 'block';
+        return;
+      }
+
       try {
         const snapshot = await database.ref('users').once('value');
-        const users = snapshot.val();
+        const users = snapshot.val() || {};
         let loggedIn = false;
 
         for (const key in users) {
@@ -221,22 +164,20 @@
           }
         }
 
-        setTimeout(() => {
-          loadingSpinner.style.display = 'none';
-          if (loggedIn) {
-            alert('Login successful!');
-            // Redirect to dashboard or main page
-          } else {
-            errorMessage.textContent = "Invalid username or password!";
-            errorMessage.style.display = 'block';
-          }
-        }, 1000);
-
-      } catch (error) {
         loadingSpinner.style.display = 'none';
-        errorMessage.textContent = "Error connecting to database!";
+
+        if (loggedIn) {
+          alert('Login successful!');
+          window.location.href = 'dashboard.html';
+        } else {
+          errorMessage.textContent = 'Invalid username or password!';
+          errorMessage.style.display = 'block';
+        }
+      } catch (err) {
+        loadingSpinner.style.display = 'none';
+        errorMessage.textContent = 'Error connecting to database!';
         errorMessage.style.display = 'block';
-        console.error(error);
+        console.error(err);
       }
     });
   </script>
