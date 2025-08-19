@@ -1,202 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AnonBrew Login</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AnonBrew Login</title>
 
-  <!-- Firebase JS SDK -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-    // Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyD5cdmNDck5nHp7idyWYMCMRcg4qhcJIUA",
-      authDomain: "anonbrew-543a6.firebaseapp.com",
-      databaseURL: "https://anonbrew-543a6-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "anonbrew-543a6",
-      storageBucket: "anonbrew-543a6.firebasestorage.app",
-      messagingSenderId: "581227381617",
-      appId: "1:581227381617:web:d69bd36245547d69fc6cd0",
-      measurementId: "G-74KG21Y44F"
-    };
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyD5cdmNDck5nHp7idyWYMCMRcg4qhcJIUA",
+  authDomain: "anonbrew-543a6.firebaseapp.com",
+  databaseURL: "https://anonbrew-543a6-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "anonbrew-543a6",
+  storageBucket: "anonbrew-543a6.firebasestorage.app",
+  messagingSenderId: "581227381617",
+  appId: "1:581227381617:web:d69bd36245547d69fc6cd0",
+  measurementId: "G-74KG21Y44F"
+};
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app);
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+window.firebaseDatabase = database;
+</script>
 
-    window.firebaseDatabase = database; // make it accessible in global scope
-  </script>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background-color: #0B0B0B;
+  color: #EEE;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #0B0B0B;
-      color: #EEE;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
+.site-header, .site-footer {
+  background-color: #111;
+  padding: 20px;
+  text-align: center;
+  border-bottom: 1px solid #333;
+}
+.site-header h1 { color: #F4C430; margin:0; }
 
-    .site-header {
-      background-color: #111;
-      padding: 20px;
-      text-align: center;
-      border-bottom: 1px solid #333;
-    }
+.login-container {
+  flex: 1;
+  max-width: 400px;
+  margin: 60px auto;
+  padding: 40px;
+  background-color: #1A1A1A;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+  text-align: center;
+}
 
-    .site-header h1 {
-      margin: 0;
-      color: #F4C430;
-      font-size: 32px;
-    }
+input[type="text"], input[type="password"] {
+  width: 100%;
+  padding: 14px;
+  margin: 10px 0;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background-color: #111;
+  color: #EEE;
+  font-size: 16px;
+}
 
-    .login-container {
-      background-color: #1A1A1A;
-      padding: 40px;
-      border-radius: 12px;
-      width: 320px;
-      margin: 50px auto;
-      text-align: center;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.5);
-    }
+button {
+  width: 100%;
+  padding: 14px;
+  background-color: #F4C430;
+  color: #0B0B0B;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 10px;
+  transition: background-color 0.3s;
+}
 
-    input[type="text"], input[type="password"] {
-      width: 100%;
-      padding: 14px;
-      margin: 10px 0;
-      border: 1px solid #333;
-      border-radius: 8px;
-      background-color: #111;
-      color: #EEE;
-      font-size: 16px;
-    }
+button:hover { background-color: #e0b220; }
 
-    button {
-      width: 100%;
-      padding: 14px;
-      background-color: #F4C430;
-      color: #0B0B0B;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      margin-top: 10px;
-      transition: background-color 0.3s;
-    }
+.error-message {
+  color: #FF6F61;
+  font-size: 14px;
+  margin-bottom: 10px;
+  display: none;
+}
 
-    button:hover { background-color: #e0b220; }
+.loading-spinner {
+  border: 4px solid #333;
+  border-top: 4px solid #F4C430;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+  display: none;
+}
 
-    .error-message {
-      color: #FF6F61;
-      font-size: 14px;
-      margin-bottom: 10px;
-      display: none;
-    }
+@keyframes spin { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);} }
 
-    .loading-spinner {
-      border: 4px solid #333;
-      border-top: 4px solid #F4C430;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-      margin: 20px auto;
-      display: none;
-    }
+.back-link { color: #F4C430; text-decoration: none; display: block; margin-top: 15px; }
+.back-link:hover { text-decoration: underline; }
 
-    @keyframes spin { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);} }
-
-    .signup-link { color: #F4C430; text-decoration: none; font-size: 14px; display: inline-block; margin-top: 15px; }
-    .signup-link:hover { text-decoration: underline; }
-
-    .site-footer { margin-top: auto; background-color: #111; text-align: center; padding: 15px; border-top: 1px solid #333; color: #888; font-size: 14px; }
-
-    @media (max-width: 400px) {
-      .login-container { width: 90%; padding: 30px; margin: 30px auto; }
-      .site-header h1 { font-size: 28px; }
-    }
-  </style>
+.site-footer { margin-top: auto; background-color: #111; text-align: center; padding: 15px; border-top: 1px solid #333; color: #888; font-size: 14px; }
+</style>
 </head>
 <body>
 
-  <header class="site-header">
-    <h1>AnonBrew</h1>
-  </header>
+<header class="site-header">
+  <h1>AnonBrew</h1>
+</header>
 
-  <div class="login-container">
-    <div class="error-message" id="errorMessage"></div>
-    <form id="loginForm">
-      <input type="text" id="username" placeholder="Username" required>
-      <input type="password" id="password" placeholder="Password" required>
-      <button type="submit">Login</button>
-    </form>
-    <div class="loading-spinner" id="loadingSpinner"></div>
-    <a href="register.html" class="signup-link">Don't have an account? Register</a>
-  </div>
+<div class="login-container">
+  <div class="error-message" id="loginError"></div>
+  <form id="loginForm">
+    <input type="text" id="username" placeholder="Username" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
+  <div class="loading-spinner" id="loginLoading"></div>
+  <a href="register.html" class="back-link">Register</a>
+</div>
 
-  <footer class="site-footer">&copy; 2025 AnonBrew. All rights reserved.</footer>
+<footer class="site-footer">&copy; 2025 AnonBrew. All rights reserved.</footer>
 
-  <script type="module">
-    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+<script type="module">
+import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-    const loginForm = document.getElementById('loginForm');
-    const errorMessage = document.getElementById('errorMessage');
-    const loadingSpinner = document.getElementById('loadingSpinner');
-    const database = window.firebaseDatabase;
+const database = window.firebaseDatabase;
+const loginForm = document.getElementById('loginForm');
+const loginError = document.getElementById('loginError');
+const loginLoading = document.getElementById('loginLoading');
 
-    loginForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  loginError.style.display = 'none';
+  loginLoading.style.display = 'block';
 
-      errorMessage.style.display = 'none';
-      loadingSpinner.style.display = 'block';
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
 
-      if (!username || !password) {
-        loadingSpinner.style.display = 'none';
-        errorMessage.textContent = 'Please enter username and password.';
-        errorMessage.style.display = 'block';
-        return;
+  if(!username || !password){
+    loginLoading.style.display = 'none';
+    loginError.textContent = "Please fill in both fields.";
+    loginError.style.display = 'block';
+    return;
+  }
+
+  try {
+    const snapshot = await get(ref(database, 'users'));
+    const users = snapshot.val() || {};
+    let found = false;
+
+    for(const key in users){
+      if(users[key].username === username && users[key].password === password){
+        found = true;
+        break;
       }
+    }
 
-      try {
-        const dbRef = ref(database, 'users');
-        const snapshot = await get(dbRef);
-        const users = snapshot.val();
+    loginLoading.style.display = 'none';
 
-        loadingSpinner.style.display = 'none';
+    if(found){
+      // Save session for dashboard access
+      sessionStorage.setItem('username', username);
+      window.location.href = 'dashboard.html';
+    } else {
+      loginError.textContent = "Invalid username or password.";
+      loginError.style.display = 'block';
+    }
 
-        if (!users) {
-          errorMessage.textContent = 'No users found. Please register first.';
-          errorMessage.style.display = 'block';
-          return;
-        }
-
-        let loggedIn = false;
-        Object.keys(users).forEach(key => {
-          if(users[key].username === username && users[key].password === password){
-            loggedIn = true;
-          }
-        });
-
-        if(loggedIn){
-          alert('Login successful!');
-          window.location.href = 'dashboard.html';
-        } else {
-          errorMessage.textContent = 'Invalid username or password!';
-          errorMessage.style.display = 'block';
-        }
-      } catch (err) {
-        loadingSpinner.style.display = 'none';
-        errorMessage.textContent = 'Error connecting to database!';
-        errorMessage.style.display = 'block';
-        console.error(err);
-      }
-    });
-  </script>
+  } catch(err){
+    loginLoading.style.display = 'none';
+    loginError.textContent = "Error logging in. Try again.";
+    loginError.style.display = 'block';
+    console.error(err);
+  }
+});
+</script>
 
 </body>
 </html>
