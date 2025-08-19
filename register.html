@@ -5,9 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AnonBrew Register</title>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js"></script>
+  <!-- Firebase JS SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD5cdmNDck5nHp7idyWYMCMRcg4qhcJIUA",
+      authDomain: "anonbrew-543a6.firebaseapp.com",
+      databaseURL: "https://anonbrew-543a6-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "anonbrew-543a6",
+      storageBucket: "anonbrew-543a6.firebasestorage.app",
+      messagingSenderId: "581227381617",
+      appId: "1:581227381617:web:d69bd36245547d69fc6cd0",
+      measurementId: "G-74KG21Y44F"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    window.firebaseDatabase = database; // make accessible globally
+  </script>
 
   <style>
     body {
@@ -128,26 +147,17 @@
 
   <footer class="site-footer">&copy; 2025 AnonBrew. All rights reserved.</footer>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      databaseURL: "https://moonton-201e4-default-rtdb.asia-southeast1.firebasedatabase.app/",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-
-    const app = firebase.initializeApp(firebaseConfig);
-    const database = firebase.database(app);
+  <script type="module">
+    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
     const registerForm = document.getElementById('registerForm');
     const registerError = document.getElementById('registerError');
     const registerLoading = document.getElementById('registerLoading');
+    const database = window.firebaseDatabase;
 
     registerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value;
       const termsChecked = document.getElementById('termsCheckbox').checked;
@@ -170,14 +180,14 @@
       }
 
       try {
-        // Get IP
+        // Get user's IP
         const ipResponse = await fetch('https://api.ipify.org?format=json');
         const ipData = await ipResponse.json();
         const userIP = ipData.ip;
 
-        // Push to Firebase
-        const userRef = database.ref('users').push();
-        await userRef.set({ username, password, ip: userIP });
+        // Save to Firebase
+        const userRef = push(ref(database, 'users'));
+        await set(userRef, { username, password, ip: userIP });
 
         registerLoading.style.display = 'none';
         alert('Registration successful!');
