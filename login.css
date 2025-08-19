@@ -1,15 +1,15 @@
-/* Body & Background */
+/* ===== Body & Background ===== */
 body {
   font-family: Arial, sans-serif;
   background-color: #0B0B0B; /* Dark black/mysterious */
-  color: #EEE; /* Light text */
+  color: #EEE;
   margin: 0;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
-/* Header */
+/* ===== Header ===== */
 .site-header {
   background-color: #111;
   padding: 20px;
@@ -19,7 +19,8 @@ body {
 
 .site-header h1 {
   margin: 0;
-  color: #F4C430; /* Accent gold */
+  color: #F4C430; /* Gold accent */
+  font-size: 32px;
 }
 
 .site-header .logo {
@@ -30,7 +31,7 @@ body {
   background-size: contain;
 }
 
-/* Footer */
+/* ===== Footer ===== */
 .site-footer {
   margin-top: auto;
   background-color: #111;
@@ -41,9 +42,9 @@ body {
   font-size: 14px;
 }
 
-/* Login Container */
+/* ===== Login Container ===== */
 .login-container {
-  background-color: #1A1A1A;
+  background-color: #1A1A1A; /* Slightly lighter dark */
   padding: 40px;
   border-radius: 12px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
@@ -52,7 +53,7 @@ body {
   text-align: center;
 }
 
-/* Input Fields */
+/* ===== Inputs ===== */
 .login-container input[type="email"],
 .login-container input[type="password"] {
   width: 100%;
@@ -62,9 +63,10 @@ body {
   border-radius: 8px;
   background-color: #111;
   color: #EEE;
+  font-size: 16px;
 }
 
-/* Buttons */
+/* ===== Buttons ===== */
 .login-container button {
   width: 100%;
   padding: 14px;
@@ -79,19 +81,19 @@ body {
 }
 
 .login-container button:hover {
-  background-color: #e0b220;
+  background-color: #e0b220; /* Darker gold on hover */
 }
 
-/* Error Message */
+/* ===== Error Messages ===== */
 .login-container .error-message {
-  color: #FF6F61; /* Coral / warning */
+  color: #FF6F61; /* Coral */
   font-size: 14px;
   margin-bottom: 10px;
-  display: none;
+  display: none; /* Show dynamically */
   animation: shake 0.3s ease;
 }
 
-/* Loading Spinner */
+/* ===== Loading Spinner ===== */
 .loading-spinner {
   border: 4px solid #333;
   border-top: 4px solid #F4C430;
@@ -103,8 +105,12 @@ body {
   display: none;
 }
 
-/* Animations */
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+/* ===== Animations ===== */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 @keyframes shake {
   0% { transform: translateX(0); }
   25% { transform: translateX(-5px); }
@@ -113,13 +119,28 @@ body {
   100% { transform: translateX(0); }
 }
 
-/* Links */
+/* ===== Links ===== */
 .signup-link, .back-link {
   color: #F4C430;
   text-decoration: none;
   font-size: 14px;
+  display: inline-block;
+  margin-top: 15px;
 }
 
 .signup-link:hover, .back-link:hover {
   text-decoration: underline;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 400px) {
+  .login-container {
+    width: 90%;
+    padding: 30px;
+    margin: 30px auto;
+  }
+
+  .site-header h1 {
+    font-size: 28px;
+  }
 }
