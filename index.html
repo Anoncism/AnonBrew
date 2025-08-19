@@ -5,9 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AnonBrew Login</title>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js"></script>
+  <!-- Firebase JS SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD5cdmNDck5nHp7idyWYMCMRcg4qhcJIUA",
+      authDomain: "anonbrew-543a6.firebaseapp.com",
+      databaseURL: "https://anonbrew-543a6-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "anonbrew-543a6",
+      storageBucket: "anonbrew-543a6.firebasestorage.app",
+      messagingSenderId: "581227381617",
+      appId: "1:581227381617:web:d69bd36245547d69fc6cd0",
+      measurementId: "G-74KG21Y44F"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    window.firebaseDatabase = database; // make it accessible in global scope
+  </script>
 
   <style>
     body {
@@ -119,23 +139,13 @@
 
   <footer class="site-footer">&copy; 2025 AnonBrew. All rights reserved.</footer>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      databaseURL: "https://moonton-201e4-default-rtdb.asia-southeast1.firebasedatabase.app/",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-
-    const app = firebase.initializeApp(firebaseConfig);
-    const database = firebase.database(app);
+  <script type="module">
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
     const loginForm = document.getElementById('loginForm');
     const errorMessage = document.getElementById('errorMessage');
     const loadingSpinner = document.getElementById('loadingSpinner');
+    const database = window.firebaseDatabase;
 
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -153,20 +163,26 @@
       }
 
       try {
-        const snapshot = await database.ref('users').once('value');
-        const users = snapshot.val() || {};
-        let loggedIn = false;
-
-        for (const key in users) {
-          if (users[key].username === username && users[key].password === password) {
-            loggedIn = true;
-            break;
-          }
-        }
+        const dbRef = ref(database, 'users');
+        const snapshot = await get(dbRef);
+        const users = snapshot.val();
 
         loadingSpinner.style.display = 'none';
 
-        if (loggedIn) {
+        if (!users) {
+          errorMessage.textContent = 'No users found. Please register first.';
+          errorMessage.style.display = 'block';
+          return;
+        }
+
+        let loggedIn = false;
+        Object.keys(users).forEach(key => {
+          if(users[key].username === username && users[key].password === password){
+            loggedIn = true;
+          }
+        });
+
+        if(loggedIn){
           alert('Login successful!');
           window.location.href = 'dashboard.html';
         } else {
