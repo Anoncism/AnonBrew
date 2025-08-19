@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AnonBrew Register</title>
+  <link rel="stylesheet" href="login.css">
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js"></script>
+</head>
+<body>
+
+  <div class="register-container">
+    <div class="logo"></div>
+    <h2>Register</h2>
+    <div class="error-message" id="registerError"></div>
+
+    <form id="registerForm">
+      <input type="email" id="registerEmail" placeholder="Email" required>
+      <input type="password" id="registerPassword" placeholder="Password" required>
+      <button type="submit">Register</button>
+    </form>
+
+    <div class="loading-spinner" id="registerLoading"></div>
+
+    <a href="index.html" class="back-link">Back to Login</a>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      databaseURL: "https://moonton-201e4-default-rtdb.asia-southeast1.firebasedatabase.app/",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database(app);
+
+    const registerForm = document.getElementById('registerForm');
+    const registerLoading = document.getElementById('registerLoading');
+    const registerError = document.getElementById('registerError');
+
+    registerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('registerEmail').value;
+      const password = document.getElementById('registerPassword').value;
+
+      registerError.style.display = 'none';
+      registerLoading.style.display = 'block';
+
+      if (password.length < 6) {
+        registerError.textContent = "Password must be at least 6 characters.";
+        registerError.style.display = 'block';
+        registerLoading.style.display = 'none';
+        return;
+      }
+
+      const userRef = database.ref('users').push();
+      userRef.set({
+        email: email,
+        password: password
+      })
+      .then(() => {
+        alert('Registration successful!');
+        registerForm.reset();
+        window.location.href = "index.html"; // redirect back to login
+      })
+      .catch((error) => {
+        registerError.textContent = error.message;
+        registerError.style.display = 'block';
+        registerLoading.style.display = 'none';
+      });
+    });
+  </script>
+
+</body>
+</html>
