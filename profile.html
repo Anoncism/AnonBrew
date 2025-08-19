@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AnonBrew Profile</title>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyD5cdmNDck5nHp7idyWYMCMRcg4qhcJIUA",
+  authDomain: "anonbrew-543a6.firebaseapp.com",
+  databaseURL: "https://anonbrew-543a6-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "anonbrew-543a6",
+  storageBucket: "anonbrew-543a6.firebasestorage.app",
+  messagingSenderId: "581227381617",
+  appId: "1:581227381617:web:d69bd36245547d69fc6cd0",
+  measurementId: "G-74KG21Y44F"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+window.firebaseDatabase = database;
+</script>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background-color: #0B0B0B;
+  color: #EEE;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.site-header, .site-footer {
+  background-color: #111;
+  padding: 20px;
+  text-align: center;
+  border-bottom: 1px solid #333;
+}
+.site-header h1 { color: #F4C430; margin:0; }
+.profile-container {
+  flex: 1;
+  padding: 30px;
+  max-width: 800px;
+  margin: 20px auto;
+  background-color: #1A1A1A;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+}
+.profile-header { text-align: center; margin-bottom: 20px; }
+.profile-info { margin-bottom: 15px; }
+.profile-info span { font-weight: bold; color: #F4C430; }
+.reviews-section { margin-top: 20px; }
+.review { border-top: 1px solid #333; padding: 10px 0; }
+.review span { font-weight: bold; color: #F4C430; }
+.average-rating { margin-bottom: 15px; }
+.back-link { color: #F4C430; text-decoration: none; margin-top: 15px; display: inline-block; }
+.back-link:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+<h1>AnonBrew Profile</h1>
+</header>
+
+<div class="profile-container">
+  <div class="profile-header">
+    <h2 id="profileName">Loading...</h2>
+  </div>
+  <div id="profileDetails">
+    <div class="profile-info"><span>Added By:</span> <span id="addedBy"></span></div>
+    <div class="profile-info"><span>IP Address:</span> <span id="userIP"></span></div>
+    <div class="profile-info"><span>Details:</span> <span id="details"></span></div>
+  </div>
+  <div class="reviews-section" id="reviewsSection">
+    <div class="average-rating" id="averageRating"></div>
+    <div id="reviewsList"></div>
+  </div>
+  <a href="dashboard.html" class="back-link">Back to Dashboard</a>
+</div>
+
+<footer class="site-footer">&copy; 2025 AnonBrew. All rights reserved.</footer>
+
+<script type="module">
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+const database = window.firebaseDatabase;
+
+const params = new URLSearchParams(window.location.search);
+const realName = params.get('name');
+
+const profileNameEl = document.getElementById('profileName');
+const addedByEl = document.getElementById('addedBy');
+const userIPEl = document.getElementById('userIP');
+const detailsEl = document.getElementById('details');
+const reviewsListEl = document.getElementById('reviewsList');
+const averageRatingEl = document.getElementById('averageRating');
+
+if (!realName) {
+  profileNameEl.textContent = "Anonymous Profile";
+  detailsEl.textContent = "No name provided.";
+} else {
+  profileNameEl.textContent = realName;
+  const namesRef = ref(database, 'names');
+  get(namesRef).then(snapshot => {
+    const names = snapshot.val();
+    let found = false;
+    for (const key in names) {
+      if(names[key].realName.toLowerCase() === realName.toLowerCase()) {
+        found = true;
+        const nameData = names[key];
+        addedByEl.textContent = nameData.addedBy || "Anonymous";
+        userIPEl.textContent = nameData.ip || "Unknown";
+        detailsEl.textContent = nameData.details || "No details available";
+
+        // Display reviews
+        const reviews = nameData.reviews || {};
+        let totalRating = 0;
+        let count = 0;
+        reviewsListEl.innerHTML = "";
+        for (const rKey in reviews) {
+          const review = reviews[rKey];
+          totalRating += review.rating || 0;
+          count++;
+          const reviewDiv = document.createElement("div");
+          reviewDiv.classList.add("review");
+          reviewDiv.innerHTML = `<span>${review.by || "Anonymous"}</span>: Rating: ${review.rating || "-"}<br>${review.comment || ""}`;
+          reviewsListEl.appendChild(reviewDiv);
+        }
+        averageRatingEl.textContent = count > 0 ? `Average Rating: ${(totalRating/count).toFixed(2)} ⭐` : "No reviews yet.";
+        break;
+      }
+    }
+    if(!found){
+      addedByEl.textContent = "Anonymous";
+      userIPEl.textContent = "Unknown";
+      detailsEl.textContent = "This profile does not exist yet.";
+      averageRatingEl.textContent = "";
+      reviewsListEl.innerHTML = "";
+    }
+  }).catch(err => {
+    console.error(err);
+    addedByEl.textContent = "-";
+    userIPEl.textContent = "-";
+    detailsEl.textContent = "Error loading profile.";
+    averageRatingEl.textContent = "";
+    reviewsListEl.innerHTML = "";
+  });
+}
+</script>
+
+</body>
+</html>
