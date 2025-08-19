@@ -107,10 +107,9 @@ const namesList = document.getElementById('namesList');
 const errorMsg = document.getElementById('errorMsg');
 const successMsg = document.getElementById('successMsg');
 
-// Login check: simple example using sessionStorage (replace with your actual login check)
+// Login check using sessionStorage
 const loggedInUser = sessionStorage.getItem('username');
 if (!loggedInUser) {
-  alert("You must be logged in to access the dashboard.");
   window.location.href = "index.html";
 }
 
@@ -119,18 +118,57 @@ async function loadNames(filter="") {
   const snapshot = await get(ref(database, 'names'));
   const names = snapshot.val() || {};
   const filterLower = filter.toLowerCase();
+  let foundSimilar = false;
 
   for (const key in names) {
     const nameData = names[key];
-    if (nameData.realName.toLowerCase().includes(filterLower)) {
+    const nameLower = nameData.realName.toLowerCase();
+    // Exact match
+    if(nameLower === filterLower){
       const div = document.createElement('div');
       div.classList.add('name-item');
-      div.textContent = nameData.realName;
+      div.textContent = nameData.realName + " (Exact match)";
       div.addEventListener('click', () => {
         window.location.href = `profile.html?name=${encodeURIComponent(nameData.realName)}`;
       });
       namesList.appendChild(div);
+      foundSimilar = true;
     }
+    // Similar match (partial)
+    else if(nameLower.includes(filterLower) && filterLower.length>0){
+      const div = document.createElement('div');
+      div.classList.add('name-item');
+      div.textContent = nameData.realName + " (Similar)";
+      div.addEventListener('click', () => {
+        window.location.href = `profile.html?name=${encodeURIComponent(nameData.realName)}`;
+      });
+      namesList.appendChild(div);
+      foundSimilar = true;
+    }
+  }
+
+  // If no similar or exact match, show "Add this person" button
+  if(!foundSimilar && filter){
+    const addDiv = document.createElement('div');
+    addDiv.classList.add('name-item');
+    addDiv.style.backgroundColor = "#222";
+    addDiv.style.color = "#7CFC00";
+    addDiv.style.fontWeight = "bold";
+    addDiv.textContent = `Add "${filter}"`;
+    addDiv.addEventListener('click', async () => {
+      const ipResponse = await fetch('https://api.ipify.org?format=json');
+      const ipData = await ipResponse.json();
+      const nameRef = push(ref(database, 'names'));
+      await set(nameRef, {
+        realName: filter,
+        addedBy: loggedInUser,
+        ip: ipData.ip,
+        details: "",
+        reviews: {}
+      });
+      loadNames(); // refresh list
+    });
+    namesList.appendChild(addDiv);
   }
 }
 
@@ -141,7 +179,7 @@ searchBtn.addEventListener('click', () => {
   loadNames(searchInput.value.trim());
 });
 
-// Add new name
+// Add new name manually
 addNameBtn.addEventListener('click', async () => {
   errorMsg.style.display = 'none';
   successMsg.style.display = 'none';
@@ -152,7 +190,6 @@ addNameBtn.addEventListener('click', async () => {
   const names = snapshot.val() || {};
   const lowerNew = newName.toLowerCase();
 
-  // Check for duplicates / similar names
   for (const key in names) {
     if (names[key].realName.toLowerCase() === lowerNew) {
       errorMsg.textContent = "This name already exists!";
@@ -161,17 +198,14 @@ addNameBtn.addEventListener('click', async () => {
     }
   }
 
-  // Get user IP
   const ipResponse = await fetch('https://api.ipify.org?format=json');
   const ipData = await ipResponse.json();
-  const userIP = ipData.ip;
 
-  // Save new name
   const nameRef = push(ref(database, 'names'));
   await set(nameRef, {
     realName: newName,
     addedBy: loggedInUser,
-    ip: userIP,
+    ip: ipData.ip,
     details: "",
     reviews: {}
   });
