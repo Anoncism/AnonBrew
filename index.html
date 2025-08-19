@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AnonBrew Login</title>
+  <title>AnonBrew</title>
   <link rel="stylesheet" href="login.css">
 
   <!-- Firebase SDK -->
@@ -12,10 +12,14 @@
 </head>
 <body>
 
-  <div class="login-container">
+  <!-- Header -->
+  <header class="site-header">
     <div class="logo"></div>
-    <h1>AnonBrew Login</h1>
+    <h1>AnonBrew</h1>
+  </header>
 
+  <!-- Login Container -->
+  <div class="login-container" id="loginContainer">
     <div class="error-message" id="errorMessage">Invalid email or password!</div>
 
     <form id="loginForm">
@@ -30,12 +34,13 @@
     <a href="register.html" class="signup-link">Don't have an account? Register</a>
   </div>
 
-  <div class="error-screen" id="errorScreen" style="display: none;">
-    <h1>Oops!</h1>
-    <p>Something went wrong. Please try again later.</p>
-  </div>
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p>&copy; 2025 AnonBrew. All rights reserved.</p>
+  </footer>
 
   <script>
+    // Firebase configuration
     const firebaseConfig = {
       apiKey: "YOUR_API_KEY",
       authDomain: "YOUR_AUTH_DOMAIN",
