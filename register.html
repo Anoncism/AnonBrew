@@ -3,12 +3,178 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AnonBrew</title>
-  <link rel="stylesheet" href="login.css">
+  <title>AnonBrew Register</title>
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js"></script>
+
+  <style>
+    /* ===== Body & Background ===== */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0B0B0B;
+      color: #EEE;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ===== Header ===== */
+    .site-header {
+      background-color: #111;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid #333;
+    }
+
+    .site-header h1 {
+      margin: 0;
+      color: #F4C430;
+      font-size: 32px;
+    }
+
+    .site-header .logo {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 10px;
+      background: url('logo.png') no-repeat center center;
+      background-size: contain;
+    }
+
+    /* ===== Footer ===== */
+    .site-footer {
+      margin-top: auto;
+      background-color: #111;
+      text-align: center;
+      padding: 15px;
+      border-top: 1px solid #333;
+      color: #888;
+      font-size: 14px;
+    }
+
+    /* ===== Register Container ===== */
+    .register-container {
+      background-color: #1A1A1A;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+      width: 320px;
+      margin: 50px auto;
+      text-align: center;
+    }
+
+    /* ===== Inputs ===== */
+    .register-container input[type="text"],
+    .register-container input[type="password"] {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0 10px 0;
+      border: 1px solid #333;
+      border-radius: 8px;
+      background-color: #111;
+      color: #EEE;
+      font-size: 16px;
+    }
+
+    /* ===== Buttons ===== */
+    .register-container button {
+      width: 100%;
+      padding: 14px;
+      background-color: #F4C430;
+      color: #0B0B0B;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .register-container button:hover {
+      background-color: #e0b220;
+    }
+
+    /* ===== Error Messages ===== */
+    .register-container .error-message {
+      color: #FF6F61;
+      font-size: 14px;
+      margin-bottom: 10px;
+      display: none;
+      animation: shake 0.3s ease;
+    }
+
+    /* ===== Loading Spinner ===== */
+    .loading-spinner {
+      border: 4px solid #333;
+      border-top: 4px solid #F4C430;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+      display: none;
+    }
+
+    /* ===== Terms and Conditions ===== */
+    .terms-container {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      margin: 15px 0;
+      text-align: left;
+    }
+
+    .terms-container input[type="checkbox"] {
+      margin-right: 8px;
+    }
+
+    .terms-container a {
+      color: #F4C430;
+      text-decoration: none;
+    }
+
+    .terms-container a:hover {
+      text-decoration: underline;
+    }
+
+    /* ===== Animations ===== */
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+
+    /* ===== Links ===== */
+    .back-link {
+      color: #F4C430;
+      text-decoration: none;
+      font-size: 14px;
+      display: inline-block;
+      margin-top: 15px;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 400px) {
+      .register-container {
+        width: 90%;
+        padding: 30px;
+        margin: 30px auto;
+      }
+
+      .site-header h1 {
+        font-size: 28px;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -26,7 +192,6 @@
       <input type="text" id="username" placeholder="Username" required>
       <input type="password" id="registerPassword" placeholder="Password" required>
 
-      <!-- Terms and Conditions -->
       <div class="terms-container">
         <input type="checkbox" id="termsCheckbox">
         <label for="termsCheckbox">I agree to the <a href="terms.html" target="_blank">Terms and Conditions</a></label>
@@ -95,7 +260,7 @@
       }
 
       try {
-        // Get user's IP address from ipify API
+        // Get user's IP address
         const response = await fetch('https://api.ipify.org?format=json');
         const data = await response.json();
         const userIP = data.ip;
