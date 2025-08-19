@@ -19,18 +19,18 @@
   </header>
 
   <!-- Login Container -->
-  <div class="login-container" id="loginContainer">
-    <div class="error-message" id="errorMessage">Invalid email or password!</div>
+  <div class="login-container">
+    <div class="error-message" id="errorMessage">Invalid username or password!</div>
 
     <form id="loginForm">
-      <input type="email" id="email" placeholder="Email" required>
+      <input type="text" id="username" placeholder="Username" required>
       <input type="password" id="password" placeholder="Password" required>
       <button type="submit">Login</button>
     </form>
 
     <div class="loading-spinner" id="loadingSpinner"></div>
 
-    <!-- Link to separate register page -->
+    <!-- Link to registration page -->
     <a href="register.html" class="signup-link">Don't have an account? Register</a>
   </div>
 
@@ -58,22 +58,44 @@
     const loadingSpinner = document.getElementById('loadingSpinner');
     const errorMessage = document.getElementById('errorMessage');
 
-    loginForm.addEventListener('submit', (e) => {
+    loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById('email').value;
+      const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value;
 
       errorMessage.style.display = 'none';
       loadingSpinner.style.display = 'block';
 
-      setTimeout(() => {
-        loadingSpinner.style.display = 'none';
-        if (email && password.length >= 6) {
-          alert('Login successful!');
-        } else {
-          errorMessage.style.display = 'block';
+      try {
+        // Get all users from Firebase
+        const snapshot = await database.ref('users').once('value');
+        const users = snapshot.val();
+        let loggedIn = false;
+
+        for (const key in users) {
+          if (users[key].username === username && users[key].password === password) {
+            loggedIn = true;
+            break;
+          }
         }
-      }, 1500);
+
+        setTimeout(() => {
+          loadingSpinner.style.display = 'none';
+          if (loggedIn) {
+            alert('Login successful!');
+            // Redirect or dashboard code here
+          } else {
+            errorMessage.textContent = "Invalid username or password!";
+            errorMessage.style.display = 'block';
+          }
+        }, 1000);
+
+      } catch (error) {
+        loadingSpinner.style.display = 'none';
+        errorMessage.textContent = "Error connecting to database!";
+        errorMessage.style.display = 'block';
+        console.error(error);
+      }
     });
   </script>
 
