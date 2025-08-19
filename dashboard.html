@@ -1,300 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AnonBrew Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AnonBrew Dashboard</title>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js"></script>
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getDatabase, ref, get, push, set } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-  <style>
-    /* ===== Body & Background ===== */
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #0B0B0B;
-      color: #EEE;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyD5cdmNDck5nHp7idyWYMCMRcg4qhcJIUA",
+  authDomain: "anonbrew-543a6.firebaseapp.com",
+  databaseURL: "https://anonbrew-543a6-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "anonbrew-543a6",
+  storageBucket: "anonbrew-543a6.firebasestorage.app",
+  messagingSenderId: "581227381617",
+  appId: "1:581227381617:web:d69bd36245547d69fc6cd0",
+  measurementId: "G-74KG21Y44F"
+};
 
-    /* ===== Header ===== */
-    .site-header {
-      background-color: #111;
-      padding: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid #333;
-    }
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+window.firebaseDatabase = database;
+</script>
 
-    .site-header h1 {
-      margin: 0;
-      color: #F4C430;
-      font-size: 28px;
-    }
-
-    .site-header .logout-btn {
-      padding: 8px 16px;
-      background-color: #F4C430;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      color: #0B0B0B;
-      transition: background-color 0.3s ease;
-    }
-
-    .site-header .logout-btn:hover {
-      background-color: #e0b220;
-    }
-
-    /* ===== Dashboard Container ===== */
-    .dashboard-container {
-      flex: 1;
-      padding: 20px;
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-
-    /* ===== Search Bar ===== */
-    .search-bar {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      border: 1px solid #333;
-      background-color: #111;
-      color: #EEE;
-      font-size: 16px;
-    }
-
-    /* ===== User List ===== */
-    .user-card {
-      background-color: #1A1A1A;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-    }
-
-    .user-info {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .username {
-      font-weight: bold;
-      font-size: 18px;
-      margin-bottom: 5px;
-      color: #F4C430;
-    }
-
-    .rating {
-      font-size: 14px;
-      color: #EEE;
-    }
-
-    .anonymous-btn {
-      padding: 8px 14px;
-      background-color: #F4C430;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      color: #0B0B0B;
-      transition: background-color 0.3s ease;
-    }
-
-    .anonymous-btn:hover {
-      background-color: #e0b220;
-    }
-
-    /* ===== Footer ===== */
-    .site-footer {
-      margin-top: auto;
-      background-color: #111;
-      text-align: center;
-      padding: 15px;
-      border-top: 1px solid #333;
-      color: #888;
-      font-size: 14px;
-    }
-
-    /* ===== Modal ===== */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8);
-      justify-content: center;
-      align-items: center;
-      z-index: 100;
-    }
-
-    .modal-content {
-      background-color: #1A1A1A;
-      padding: 30px;
-      border-radius: 12px;
-      max-width: 400px;
-      width: 90%;
-      text-align: center;
-    }
-
-    .modal-content textarea {
-      width: 100%;
-      height: 100px;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #333;
-      background-color: #111;
-      color: #EEE;
-      resize: none;
-      margin-bottom: 15px;
-    }
-
-    .modal-content button {
-      padding: 10px 18px;
-      background-color: #F4C430;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      color: #0B0B0B;
-      transition: background-color 0.3s ease;
-    }
-
-    .modal-content button:hover {
-      background-color: #e0b220;
-    }
-  </style>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background-color: #0B0B0B;
+  color: #EEE;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.site-header, .site-footer {
+  background-color: #111;
+  padding: 20px;
+  text-align: center;
+  border-bottom: 1px solid #333;
+}
+.site-header h1 { color: #F4C430; margin:0; }
+.dashboard-container {
+  flex: 1;
+  padding: 30px;
+  max-width: 900px;
+  margin: 20px auto;
+  background-color: #1A1A1A;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+}
+.search-bar { margin-bottom: 20px; }
+.search-bar input { padding: 10px; width: 60%; border-radius: 8px; border: 1px solid #333; background-color: #111; color: #EEE; }
+.search-bar button { padding: 10px 15px; margin-left: 10px; border-radius: 8px; border: none; background-color: #F4C430; color: #0B0B0B; cursor: pointer; font-weight: bold; }
+.search-bar button:hover { background-color: #e0b220; }
+.add-section { margin-top: 20px; }
+.add-section input { padding: 10px; width: 60%; border-radius: 8px; border: 1px solid #333; background-color: #111; color: #EEE; }
+.add-section button { padding: 10px 15px; margin-left: 10px; border-radius: 8px; border: none; background-color: #F4C430; color: #0B0B0B; cursor: pointer; font-weight: bold; }
+.add-section button:hover { background-color: #e0b220; }
+.names-list { margin-top: 20px; }
+.name-item { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; transition: background 0.2s; }
+.name-item:hover { background-color: #222; }
+.error-message { color: #FF6F61; display: none; margin-top: 10px; }
+.success-message { color: #7CFC00; display: none; margin-top: 10px; }
+</style>
 </head>
 <body>
 
-  <!-- Header -->
-  <header class="site-header">
-    <h1>AnonBrew</h1>
-    <button class="logout-btn" id="logoutBtn">Logout</button>
-  </header>
+<header class="site-header">
+<h1>AnonBrew Dashboard</h1>
+</header>
 
-  <!-- Dashboard Container -->
-  <div class="dashboard-container">
-    <input type="text" id="searchInput" class="search-bar" placeholder="Search by username...">
-    <div id="userList"></div>
+<div class="dashboard-container">
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search Real Name">
+    <button id="searchBtn">Search</button>
   </div>
 
-  <!-- Footer -->
-  <footer class="site-footer">
-    <p>&copy; 2025 AnonBrew. All rights reserved.</p>
-  </footer>
-
-  <!-- Modal for anonymous thought -->
-  <div class="modal" id="thoughtModal">
-    <div class="modal-content">
-      <h3>Leave an anonymous thought</h3>
-      <textarea id="thoughtInput" placeholder="Write your thought..."></textarea>
-      <button id="submitThought">Submit</button>
-    </div>
+  <div class="add-section">
+    <input type="text" id="addNameInput" placeholder="Add new Real Name">
+    <button id="addNameBtn">Add Name</button>
+    <div class="error-message" id="errorMsg"></div>
+    <div class="success-message" id="successMsg"></div>
   </div>
 
-  <script>
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      databaseURL: "https://moonton-201e4-default-rtdb.asia-southeast1.firebasedatabase.app/",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
+  <div class="names-list" id="namesList">
+    <!-- Search results will appear here -->
+  </div>
+</div>
 
-    const app = firebase.initializeApp(firebaseConfig);
-    const database = firebase.database(app);
+<footer class="site-footer">&copy; 2025 AnonBrew. All rights reserved.</footer>
 
-    const userListEl = document.getElementById('userList');
-    const searchInput = document.getElementById('searchInput');
-    const thoughtModal = document.getElementById('thoughtModal');
-    const thoughtInput = document.getElementById('thoughtInput');
-    const submitThoughtBtn = document.getElementById('submitThought');
-    let selectedUserKey = null;
+<script type="module">
+import { ref, get, push, set } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-    // Load users
-    async function loadUsers() {
-      const snapshot = await database.ref('users').once('value');
-      const users = snapshot.val();
-      renderUsers(users);
-    }
+const database = window.firebaseDatabase;
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const addNameInput = document.getElementById('addNameInput');
+const addNameBtn = document.getElementById('addNameBtn');
+const namesList = document.getElementById('namesList');
+const errorMsg = document.getElementById('errorMsg');
+const successMsg = document.getElementById('successMsg');
 
-    function renderUsers(users) {
-      userListEl.innerHTML = '';
-      for (const key in users) {
-        const user = users[key];
-        const card = document.createElement('div');
-        card.className = 'user-card';
-        card.innerHTML = `
-          <div class="user-info">
-            <span class="username">${user.username}</span>
-            <span class="rating">Rating: ${user.rating || 'N/A'}</span>
-          </div>
-          <button class="anonymous-btn" data-key="${key}">Leave Thought</button>
-        `;
-        userListEl.appendChild(card);
-      }
+// Login check: simple example using sessionStorage (replace with your actual login check)
+const loggedInUser = sessionStorage.getItem('username');
+if (!loggedInUser) {
+  alert("You must be logged in to access the dashboard.");
+  window.location.href = "index.html";
+}
 
-      // Attach click events
-      document.querySelectorAll('.anonymous-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          selectedUserKey = e.target.dataset.key;
-          thoughtModal.style.display = 'flex';
-        });
+async function loadNames(filter="") {
+  namesList.innerHTML = "";
+  const snapshot = await get(ref(database, 'names'));
+  const names = snapshot.val() || {};
+  const filterLower = filter.toLowerCase();
+
+  for (const key in names) {
+    const nameData = names[key];
+    if (nameData.realName.toLowerCase().includes(filterLower)) {
+      const div = document.createElement('div');
+      div.classList.add('name-item');
+      div.textContent = nameData.realName;
+      div.addEventListener('click', () => {
+        window.location.href = `profile.html?name=${encodeURIComponent(nameData.realName)}`;
       });
+      namesList.appendChild(div);
     }
+  }
+}
 
-    // Search filter
-    searchInput.addEventListener('input', async () => {
-      const query = searchInput.value.toLowerCase();
-      const snapshot = await database.ref('users').once('value');
-      const users = snapshot.val();
-      const filtered = {};
-      for (const key in users) {
-        if (users[key].username.toLowerCase().includes(query)) {
-          filtered[key] = users[key];
-        }
-      }
-      renderUsers(filtered);
-    });
+// Initial load
+loadNames();
 
-    // Submit anonymous thought
-    submitThoughtBtn.addEventListener('click', async () => {
-      const thought = thoughtInput.value.trim();
-      if (!thought) return;
-      if (!selectedUserKey) return;
-      await database.ref(`users/${selectedUserKey}/thoughts`).push({ text: thought });
-      thoughtInput.value = '';
-      thoughtModal.style.display = 'none';
-      alert('Thought submitted anonymously!');
-    });
+searchBtn.addEventListener('click', () => {
+  loadNames(searchInput.value.trim());
+});
 
-    // Close modal when clicking outside
-    window.addEventListener('click', (e) => {
-      if (e.target === thoughtModal) thoughtModal.style.display = 'none';
-    });
+// Add new name
+addNameBtn.addEventListener('click', async () => {
+  errorMsg.style.display = 'none';
+  successMsg.style.display = 'none';
+  const newName = addNameInput.value.trim();
+  if (!newName) return;
 
-    // Logout
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      window.location.href = 'index.html';
-    });
+  const snapshot = await get(ref(database, 'names'));
+  const names = snapshot.val() || {};
+  const lowerNew = newName.toLowerCase();
 
-    // Initial load
-    loadUsers();
-  </script>
+  // Check for duplicates / similar names
+  for (const key in names) {
+    if (names[key].realName.toLowerCase() === lowerNew) {
+      errorMsg.textContent = "This name already exists!";
+      errorMsg.style.display = 'block';
+      return;
+    }
+  }
+
+  // Get user IP
+  const ipResponse = await fetch('https://api.ipify.org?format=json');
+  const ipData = await ipResponse.json();
+  const userIP = ipData.ip;
+
+  // Save new name
+  const nameRef = push(ref(database, 'names'));
+  await set(nameRef, {
+    realName: newName,
+    addedBy: loggedInUser,
+    ip: userIP,
+    details: "",
+    reviews: {}
+  });
+
+  successMsg.textContent = "Name added successfully!";
+  successMsg.style.display = 'block';
+  addNameInput.value = "";
+  loadNames();
+});
+</script>
+
 </body>
 </html>
