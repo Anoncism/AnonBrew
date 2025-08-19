@@ -42,8 +42,9 @@ body {
   font-size: 14px;
 }
 
-/* ===== Login Container ===== */
-.login-container {
+/* ===== Container for login/register ===== */
+.login-container,
+.register-container {
   background-color: #1A1A1A; /* Slightly lighter dark */
   padding: 40px;
   border-radius: 12px;
@@ -55,7 +56,9 @@ body {
 
 /* ===== Inputs ===== */
 .login-container input[type="email"],
-.login-container input[type="password"] {
+.login-container input[type="password"],
+.register-container input[type="text"],
+.register-container input[type="password"] {
   width: 100%;
   padding: 14px;
   margin: 10px 0 10px 0;
@@ -67,7 +70,8 @@ body {
 }
 
 /* ===== Buttons ===== */
-.login-container button {
+.login-container button,
+.register-container button {
   width: 100%;
   padding: 14px;
   background-color: #F4C430; /* Gold */
@@ -80,16 +84,18 @@ body {
   transition: background-color 0.3s ease;
 }
 
-.login-container button:hover {
+.login-container button:hover,
+.register-container button:hover {
   background-color: #e0b220; /* Darker gold on hover */
 }
 
 /* ===== Error Messages ===== */
-.login-container .error-message {
+.login-container .error-message,
+.register-container .error-message {
   color: #FF6F61; /* Coral */
   font-size: 14px;
   margin-bottom: 10px;
-  display: none; /* Show dynamically */
+  display: none; /* Shown dynamically via JS */
   animation: shake 0.3s ease;
 }
 
@@ -105,11 +111,30 @@ body {
   display: none;
 }
 
-/* ===== Animations ===== */
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+/* ===== Terms and Conditions ===== */
+.terms-container {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  margin: 15px 0;
+  text-align: left;
 }
+
+.terms-container input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.terms-container a {
+  color: #F4C430;
+  text-decoration: none;
+}
+
+.terms-container a:hover {
+  text-decoration: underline;
+}
+
+/* ===== Animations ===== */
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 @keyframes shake {
   0% { transform: translateX(0); }
@@ -134,7 +159,8 @@ body {
 
 /* ===== Responsive ===== */
 @media (max-width: 400px) {
-  .login-container {
+  .login-container,
+  .register-container {
     width: 90%;
     padding: 30px;
     margin: 30px auto;
